@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="container">
-  <h2 class="mt-5 mb-3">Danh sách user</h2>
+  <h2 class="mt-5 mb-3">Danh sách user </h2>
 
   <div class="row">
     <div class="col-4">
@@ -31,7 +31,7 @@
         <tr th:each="user :${users}">
           <td th:text="${user.id}"></td>
           <td th:text="${user.name}"></td>
-          <td><a th:href="@{/users/{id}/files (id = ${user.id})}">Xem chi tiết</a></td>
+          <td><a th:href="@{/api/v1/users/{id}/files (id = ${user.id})}">Xem chi tiết</a></td>
         </tr>
         </tbody>
       </table>

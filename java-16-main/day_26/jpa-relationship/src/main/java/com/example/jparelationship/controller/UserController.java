@@ -31,6 +31,7 @@ public class UserController {
     @GetMapping("/users/{id}/files")
     public String getFiles(@PathVariable Integer id, Model model) {
         model.addAttribute("files", fileServerService.getFilesOfUser(id));
+        model.addAttribute("userId", id);
         return "file";
     }
 

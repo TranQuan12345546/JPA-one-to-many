@@ -44,7 +44,7 @@ public class FileServerService {
         fileServerRepository.delete(fileServer);
     }
 
-    public String uploadFile(Integer userId, MultipartFile file) {
+    public FileServer uploadFile(Integer userId, MultipartFile file) {
         validateFile(file);
 
         // Upload file
@@ -62,7 +62,7 @@ public class FileServerService {
 
             fileServerRepository.save(fileServer);
 
-            return "/api/v1/files/" + fileServer.getId();
+            return fileServer;
         } catch (IOException e) {
             throw new RuntimeException("Lỗi khi upload file");
         }

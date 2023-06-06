@@ -17,7 +17,8 @@
 <div class="container">
   <h2 class="mt-5 mb-3">Danh sách file</h2>
 
-  <button class="btn btn-warning mb-3">Upload file</button>
+  <input type="file" id="input-file" hidden="hidden">
+  <label for = "input-file" class="btn btn-warning mb-3">Upload file</label>
   <div class="row">
     <div class="col-6">
       <table class="table table-hover table-bordered">
@@ -31,17 +32,77 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="file, iStat:${files}">
+        <tr th:each="file:${files}" th:id = "|file-${file.id}|">
           <td th:text="${file.id}"></td>
           <td th:text="${file.type}"></td>
-          <td th:text="${file.createdAt}"></td>
-          <td>Xem chi tiết</td>
-          <td>Delete</td>
+          <td th:text="${#temporals.format(file.createdAt, 'dd/MM/yyyy')}"></td>
+          <td><a th:href="@{/api/v1/files/{id} (id=${file.id})}" target="_blank">Xem chi tiết</a></td>
+          <td>
+            <button class="btn btn-danger" th:onclick="|deleteFile(${file.id})|">
+            Delete
+            </button>
+          </td>
         </tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
+<script th:inline="javascript">
+  const userId = [[${userId}]];
+
+  const deleteFile = id => {
+    const isConfirm = window.confirm("Bạn có muốn xoá không?");
+    if (isConfirm) {
+      fetch(`/api/v1/files/${id}`, {
+        method: "DELETE"
+      })
+              .then((res) => {
+                console.log(res)
+                const div = document.querySelector(`#file-${id}`);
+                div.parentNode.removeChild(div);
+                console.log("success")
+              })
+              .catch(err => {
+                console.log(err)
+              })
+    }
+  }
+
+  const input = document.getElementById("input-file");
+  input.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    fetch(`/api/v1/users/${userId}/files`, {
+      method: "POST",
+      body: formData
+    })
+            .then((res) => {
+              return res.json();
+            })
+            .then((res) => {
+              const tbody = document.querySelector("tbody");
+              tbody.insertAdjacentHTML("beforeend",
+                      `<tr id="file-${res.id}">
+                        <td>${res.id}</td>
+                        <td>${res.type}</td>
+                        <td>06/06/2023</td>
+                        <td><a href="/api/v1/files/${res.id}" target="_blank">Xem chi tiết</a></td>
+                        <td>
+                          <button class="btn btn-danger" onClick="deleteFile(${res.id})">
+                            Delete
+                          </button>
+                        </td>
+                      </tr>`
+              )
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+  })
+</script>
 </body>
 </html>
